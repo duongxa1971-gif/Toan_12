@@ -1,0 +1,127 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Ôn thi trắc nghiệm Toán 12</title>
+<style>
+:root{--bg:#f4f8ff;--card:#fff;--tx:#1d2a44;--mu:#5d6b88;--pr:#2f6fed;--ok:#1a9d55;--no:#d93a3a;--bd:#d6e0f5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#121a2b;--card:#1b2640;--tx:#e8eefc;--mu:#9fb0d4;--bd:#2d3b5e}}
+:root[data-theme=dark]{--bg:#121a2b;--card:#1b2640;--tx:#e8eefc;--mu:#9fb0d4;--bd:#2d3b5e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.5 "Be Vietnam Pro",system-ui,sans-serif}
+#app{max-width:1200px;margin:auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin:12px 0}
+h1{font-size:1.5em;margin:.2em 0}h2{font-size:1.2em;margin:.2em 0}
+input[type=text],input[type=password],input[type=datetime-local],select{font:inherit;padding:10px 12px;border:2px solid var(--bd);border-radius:10px;width:100%;background:var(--card);color:var(--tx)}
+button{font:inherit;font-weight:600;padding:10px 18px;border:0;border-radius:10px;background:var(--pr);color:#fff;cursor:pointer;margin:4px 4px 4px 0}
+button.g{background:transparent;color:var(--pr);border:2px solid var(--pr)}button:disabled{opacity:.5}
+.mu{color:var(--mu)}.err{color:var(--no);font-weight:600}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 200px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 14px;margin-bottom:8px}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--pr)}
+.split{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}@media(max-width:900px){.split{grid-template-columns:1fr}}
+.pg{max-height:80vh;overflow:auto;border:2px solid var(--bd);border-radius:12px;background:#fff}.pg img{display:block;width:100%;height:auto}
+.q{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0}.q b{min-width:56px}
+.pill input{display:none}.pill span{display:inline-block;min-width:42px;text-align:center;padding:7px 10px;border:2px solid var(--bd);border-radius:10px;cursor:pointer;font-weight:600}.pill input:checked+span{background:var(--pr);border-color:var(--pr);color:#fff}
+.ok{color:var(--ok)}.no{color:var(--no)}.it{padding:6px 10px;border-radius:8px;margin:4px 0;border-left:6px solid}.it.ok{background:#1a9d5518;border-color:var(--ok);color:var(--tx)}.it.no{background:#d93a3a18;border-color:var(--no);color:var(--tx)}.it.bl{background:#8883;border-color:#888}
+table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:left}th{cursor:default}.sc{overflow-x:auto}
+.ch{display:flex;align-items:flex-end;gap:4px;height:220px;border-bottom:2px solid var(--mu);padding-top:10px;min-width:560px}.ch div{flex:1;text-align:center;font-size:11px;display:flex;flex-direction:column;justify-content:flex-end;height:100%}.ch i{display:block;background:var(--pr);border-radius:4px 4px 0 0;min-height:1px}
+.lb{display:flex;gap:4px;min-width:560px}.lb span{flex:1;text-align:center;font-size:10px;color:var(--mu)}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script></head><body><div id="app">Đang tải…</div><script>
+const K={
+'0121':{a:'BABBBBCBBBCA',b:['ĐSĐĐ','SĐĐĐ','SSĐĐ','ĐĐSĐ'],c:['14','20','241','-98','1,33','23']},
+'0122':{a:'DCCDCBACCBBD',b:['ĐSSĐ','SĐSS','SĐĐĐ','ĐĐSS'],c:['29','30','167','-1','1,76','-218']},
+'0123':{a:'AADCABBDBCDC',b:['SĐĐĐ','ĐSĐĐ','ĐĐSĐ','SSĐĐ'],c:['23','20','14','241','1,33','-98']},
+'0124':{a:'CBAADDCBCACB',b:['SĐSS','ĐĐSS','ĐSSĐ','SĐĐĐ'],c:['167','-1','29','30','-218','1,76']}};
+const CODES=Object.keys(K),$=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=s=>{s=String(s).trim().replace(',','.');return s===''?NaN:Number(s)};
+const IDS=[];for(let i=1;i<=12;i++)IDS.push(['I.'+i,'I – Câu '+i]);
+for(let q=1;q<=4;q++)for(let j=0;j<4;j++)IDS.push(['II.'+q+'abcd'[j],'II – Câu '+q+' ý '+'abcd'[j]]);
+for(let i=1;i<=6;i++)IDS.push(['III.'+i,'III – Câu '+i]);
+let db,cfg={ex:{'0121':'pdf/de0121.pdf','0122':'pdf/de0122.pdf','0123':'pdf/de0123.pdf','0124':'pdf/de0124.pdf'},sch:null},me={},subs=[],tmr,sortBy='ts',sortDir=-1,filt='',tOK=false,unsub;
+const fmt=t=>new Date(t).toLocaleString('vi-VN');
+const h=s=>{let x=5381;for(const c of s)x=(x*33^c.charCodeAt(0))>>>0;return x.toString(36)};
+const loc=ms=>ms?new Date(ms-new Date(ms).getTimezoneOffset()*6e4).toISOString().slice(0,16):'';
+function grade(code,A){const k=K[code],it={},p=[0,.1,.25,.5,1];let s=0;
+for(let i=0;i<12;i++){const c=A.a[i]||'',r=!c?2:c==k.a[i]?1:0;it['I.'+(i+1)]={c,r};if(r==1)s+=.25}
+for(let q=0;q<4;q++){let ok=0;for(let j=0;j<4;j++){const c=A.b[q][j]||'',r=!c?2:c==k.b[q][j]?1:0;it['II.'+(q+1)+'abcd'[j]]={c,r};if(r==1)ok++}s+=p[ok]}
+for(let i=0;i<6;i++){const c=(A.c[i]||'').trim(),r=!c?2:Math.abs(num(c)-num(k.c[i]))<1e-9?1:0;it['III.'+(i+1)]={c,r};if(r==1)s+=.5}
+return{it,s:Math.round(s*100)/100}}
+function keyOf(id,code){const k=K[code];if(id[0]=='I'&&id[1]=='.')return k.a[+id.slice(2)-1];if(id.startsWith('II.'))return k.b[+id[3]-1]['abcd'.indexOf(id[4])];return k.c[+id.slice(4)-1]}
+async function init(){try{firebase.initializeApp(FIREBASE_CONFIG);db=firebase.firestore()}catch(e){db=null}if(!db||!FIREBASE_CONFIG.projectId){$('#app').innerHTML='<div class="card"><h1>Chưa cấu hình</h1><p>Hãy điền thông tin Firebase vào file firebase-config.js (xem README).</p></div>';return}
+await loadCfg();setInterval(loadCfg,20000);home()}
+async function loadCfg(){try{const b=await db.collection('config').doc('sch').get();cfg.sch=b.exists?b.data():null}catch(e){}
+const s=$('#st');if(s)s.innerHTML=status().msg}
+function status(){const s=cfg.sch,n=Date.now();if(!s||!s.start||!s.end)return{open:false,msg:'🔒 Giáo viên chưa đặt giờ làm bài.'};
+if(n<s.start)return{open:false,msg:'⏳ Chưa đến giờ. Mở lúc '+fmt(s.start)};if(n>s.end)return{open:false,msg:'🔒 Đã hết giờ làm bài (đóng lúc '+fmt(s.end)+').'};return{open:true,msg:'✅ Đang mở đến '+fmt(s.end)}}
+function home(){clearInterval(tmr);if(unsub){unsub();unsub=null}
+$('#app').innerHTML=`<div class="card"><h1>📘 Ôn thi trắc nghiệm Toán 12</h1><p class="mu">Thời gian 90 phút · 12 câu nhiều lựa chọn + 4 câu đúng/sai + 6 câu trả lời ngắn. Mỗi lần vào, hệ thống chọn mã đề khác lần trước.</p>
+<p id="st">${status().msg}</p><div class="row"><div><label>Họ và tên *</label><input type="text" id="nm"></div><div><label>Lớp *</label><input type="text" id="cl"></div></div>
+<p id="er" class="err"></p><button id="go">Bắt đầu làm bài</button><button class="g" id="tc">Trang giáo viên</button></div>`;
+$('#go').onclick=start;$('#tc').onclick=teacherLogin}
+async function start(){const nm=$('#nm').value.trim(),cl=$('#cl').value.trim(),er=$('#er');await loadCfg();
+if(!nm||!cl){er.textContent='Hãy nhập đủ Họ tên và Lớp.';return}
+if(!status().open){er.textContent='Hiện ngoài khung giờ cho phép làm bài.';return}
+const avail=CODES.filter(c=>cfg.ex[c]);if(!avail.length){er.textContent='Chưa có file đề. Báo giáo viên.';return}
+const ref=db.collection('last').doc(h((nm+'|'+cl).toLowerCase().replace(/\s+/g,' ')));let last='';
+try{const d=await ref.get();if(d.exists)last=d.data().c}catch(e){}
+const pool=avail.filter(c=>c!=last),code=(pool.length?pool:avail)[Math.floor(Math.random()*(pool.length||avail.length))];
+try{await ref.set({c:code})}catch(e){}
+me={nm,cl,code,dl:Math.min(Date.now()+90*6e4,cfg.sch.end),t0:Date.now(),done:false,warned:false};quiz()}
+const PG={"0121":6,"0122":5,"0123":5,"0124":5};const pages=c=>Array.from({length:PG[c]},(_,i)=>`<img src="img/de${c}-${i+1}.jpg" alt="Đề ${c} trang ${i+1}">`).join('');
+const pill=(n,v)=>`<label class="pill"><input type="radio" name="${n}" value="${v}"><span>${v}</span></label>`;
+function quiz(){let p1='',p2='',p3='';
+for(let i=0;i<12;i++)p1+=`<div class="q"><b>Câu ${i+1}</b>${['A','B','C','D'].map(v=>pill('a'+i,v)).join('')}</div>`;
+for(let q=0;q<4;q++){p2+=`<div class="card" style="margin:6px 0"><b>Câu ${q+1}</b>`+[0,1,2,3].map(j=>`<div class="q"><b>${'abcd'[j]})</b>${pill('b'+q+j,'Đ')}${pill('b'+q+j,'S')}</div>`).join('')+'</div>'}
+for(let i=0;i<6;i++)p3+=`<div class="q"><b>Câu ${i+1}</b><input type="text" inputmode="decimal" id="c${i}" style="max-width:180px" placeholder="Đáp số"></div>`;
+const u=cfg.ex[me.code];
+$('#app').innerHTML=`<div class="top"><div class="row" style="align-items:center"><b>${esc(me.nm)} – ${esc(me.cl)} · Mã đề ${me.code}</b><b id="clk" style="text-align:right;font-size:1.3em"></b></div><div class="bar"><i id="pb"></i></div></div>
+<div class="split"><div><div class="pg">${pages(me.code)}</div><a href="${u}" target="_blank">Tải/mở đề dạng PDF</a></div>
+<div class="card"><h2>PHẦN I</h2>${p1}<h2>PHẦN II (Đúng/Sai)</h2>${p2}<h2>PHẦN III (Trả lời ngắn)</h2><p class="mu">Nhập số, dùng dấu phẩy hoặc chấm cho số thập phân.</p>${p3}
+<p id="wn" class="err"></p><button id="sb">Nộp bài</button></div></div>`;
+$('#sb').onclick=()=>submit(false);tick();tmr=setInterval(tick,1000)}
+function collect(){const g=n=>(document.querySelector(`input[name="${n}"]:checked`)||{}).value||'';const A={a:[],b:[],c:[]};
+for(let i=0;i<12;i++)A.a.push(g('a'+i));for(let q=0;q<4;q++){A.b.push([]);for(let j=0;j<4;j++)A.b[q].push(g('b'+q+j))}
+for(let i=0;i<6;i++)A.c.push($('#c'+i).value);return A}
+function tick(){const r=me.dl-Date.now();if(r<=0){submit(true);return}const m=Math.floor(r/6e4),s=Math.floor(r%6e4/1e3);
+$('#clk').textContent='⏱ '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('#pb').style.width=Math.max(0,r/(me.dl-me.t0)*100)+'%'}
+async function submit(auto){if(me.done)return;const A=collect(),g=grade(me.code,A),blank=Object.values(g.it).filter(x=>x.r==2).length;
+if(!auto&&blank&&!me.warned){me.warned=true;$('#wn').textContent=`Còn ${blank} câu/ý chưa làm. Bấm “Nộp bài” lần nữa nếu muốn nộp luôn.`;return}
+me.done=true;clearInterval(tmr);const id=Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const rec={nm:me.nm,cl:me.cl,code:me.code,ts:Date.now(),score:g.s,it:g.it,ans:A};
+try{await db.collection('subs').doc(id).set(rec)}catch(e){me.done=false;$('#app').insertAdjacentHTML('afterbegin','<p class="err">Không lưu được bài nộp, hãy bấm Nộp lại.</p>');tmr=setInterval(tick,1000);return}
+result(rec,auto)}
+function result(r,auto){let h=`<div class="card"><h1>Kết quả: ${r.score.toFixed(2)} / 10</h1><p>${esc(r.nm)} – ${esc(r.cl)} · Mã đề ${r.code} · nộp lúc ${fmt(r.ts)}${auto?' (hết giờ, tự nộp)':''}</p><p class="mu">Lời giải chi tiết: xem trong đề gốc / hỏi giáo viên.</p></div><div class="card">`;
+for(const[id,l]of IDS){const x=r.it[id],k=keyOf(id,r.code),c=x.r==1?'ok':x.r==0?'no':'bl';
+h+=`<div class="it ${c}"><b>${l}</b>: em chọn <b>${x.c||'(bỏ trống)'}</b> ${x.r==1?'✔ Đúng':x.r==0?'✘ Sai':'— chưa làm'} · đáp án đúng: <b>${k}</b></div>`}
+$('#app').innerHTML=h+'</div><button id="bk">Về trang đầu</button>';$('#bk').onclick=home}
+function teacherLogin(){$('#app').innerHTML=`<div class="card"><h2>Trang giáo viên</h2><input type="password" id="pw" placeholder="Mật khẩu"><p id="er" class="err"></p><button id="ok">Vào</button><button class="g" id="bk">Quay lại</button></div>`;
+$('#bk').onclick=home;$('#ok').onclick=()=>{if($('#pw').value==='12345678'){tOK=true;teacher()}else $('#er').textContent='Sai mật khẩu.'}}
+function teacher(){clearInterval(tmr);const s=cfg.sch||{};
+$('#app').innerHTML=`<div class="card"><h1>👩‍🏫 Quản trị</h1><div class="row"><div><label>Giờ bắt đầu</label><input type="datetime-local" id="s1" value="${loc(s.start)}"></div><div><label>Giờ kết thúc</label><input type="datetime-local" id="s2" value="${loc(s.end)}"></div></div>
+<button id="sv">Lưu khung giờ</button><span id="sm" class="mu"></span><button class="g" id="bk">Thoát</button></div><div id="dash"></div>`;
+$('#bk').onclick=()=>{tOK=false;home()};
+$('#sv').onclick=async()=>{const a=new Date($('#s1').value).getTime(),b=new Date($('#s2').value).getTime();if(!(a<b)){$('#sm').textContent=' Giờ không hợp lệ.';return}
+try{await db.collection('config').doc('sch').set({start:a,end:b});cfg.sch={start:a,end:b};$('#sm').textContent=' Đã lưu.'}catch(e){$('#sm').textContent=' Lỗi lưu.'}};
+unsub=db.collection('subs').onSnapshot(q=>{subs=q.docs.map(d=>d.data());draw()})}
+function draw(){const d=$('#dash');if(!d)return;const L=subs.filter(x=>!filt||x.code==filt),n=L.length;
+L.sort((a,b)=>(a[sortBy]-b[sortBy])*sortDir);
+let h=`<div class="card"><div class="row" style="align-items:center"><h2>Kết quả (${n} bài đã nộp)</h2><select id="ft"><option value="">Tất cả mã đề</option>${CODES.map(c=>`<option ${filt==c?'selected':''}>${c}</option>`).join('')}</select></div>`;
+h+=n?`<div class="sc"><table><tr><th>Họ tên</th><th>Lớp</th><th>Mã đề</th><th><a href="#" data-s="score">Điểm ⇅</a></th><th><a href="#" data-s="ts">Giờ nộp ⇅</a></th></tr>${L.map(x=>`<tr><td>${esc(x.nm)}</td><td>${esc(x.cl)}</td><td>${x.code}</td><td>${x.score.toFixed(2)}</td><td>${fmt(x.ts)}</td></tr>`).join('')}</table></div>`:'<p class="mu">Chưa có bài nộp nào.</p>';
+h+='</div>';
+const st={};IDS.forEach(([id])=>st[id]={ok:0,no:0,bl:0,d:{}});
+L.forEach(x=>IDS.forEach(([id])=>{const v=x.it[id],t=st[id];if(v.r==1)t.ok++;else if(v.r==0)t.no++;else t.bl++;const c=v.c||'(bỏ trống)';t.d[c]=(t.d[c]||0)+1}));
+const cq=[];for(let i=1;i<=12;i++)cq.push(['I.'+i,'I.'+i,L.filter(x=>x.it['I.'+i].r!=1).length]);
+for(let q=1;q<=4;q++)cq.push(['II.'+q,'II.'+q,L.filter(x=>'abcd'.split('').some(j=>x.it['II.'+q+j].r!=1)).length]);
+for(let i=1;i<=6;i++)cq.push(['III.'+i,'III.'+i,L.filter(x=>x.it['III.'+i].r!=1).length]);
+h+=`<div class="card"><h2>Tỉ lệ học sinh làm sai từng câu</h2><p class="mu">Sai = chọn sai hoặc bỏ trống; câu đúng/sai tính sai nếu chưa đúng cả 4 ý.</p>`;
+h+=n?`<div class="sc"><div class="ch">${cq.map(c=>{const p=c[2]/n*100;return `<div title="${c[0]}: ${p.toFixed(0)}%">${p.toFixed(0)}%<i style="height:${p*1.8}px"></i></div>`}).join('')}</div><div class="lb">${cq.map(c=>`<span>${c[0]}</span>`).join('')}</div></div>`:'<p class="mu">Chưa có dữ liệu.</p>';
+h+='</div>';
+h+=`<div class="card"><h2>Báo cáo số liệu từng câu/ý</h2><button id="dl">⬇ Tải báo cáo Excel</button><div class="sc"><table><tr><th>Câu/ý</th><th>Đúng</th><th>Phương án đã chọn</th><th>Sai</th><th>Bỏ qua</th></tr>${IDS.map(([id,l])=>{const t=st[id];return `<tr><td>${l}</td><td>${t.ok}</td><td>${dist(t.d)}</td><td>${t.no}</td><td>${t.bl}</td></tr>`}).join('')}</table></div></div>`;
+d.innerHTML=h;$('#ft').onchange=e=>{filt=e.target.value;draw()};
+d.querySelectorAll('[data-s]').forEach(a=>a.onclick=e=>{e.preventDefault();const k=a.dataset.s;sortDir=sortBy==k?-sortDir:-1;sortBy=k;draw()});
+$('#dl').onclick=()=>dl(st)}
+const dist=d=>Object.entries(d).map(([k,v])=>esc(k)+': '+v).join(' · ');
+async function dl(st){const rows=IDS.map(([id,l])=>{const t=st[id];return `<tr><td>${l}</td><td>${t.ok}</td><td>${dist(t.d)}</td><td>${t.no}</td><td>${t.bl}</td></tr>`}).join('');
+const html=`<html><head><meta charset="utf-8"></head><body><table border="1"><tr><th>Câu/ý</th><th>Số lượng HS làm đúng</th><th>Phương án HS đã chọn</th><th>Số lượng HS làm sai</th><th>Số lượng HS bỏ qua</th></tr>${rows}</table></body></html>`;
+const b=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='bao-cao-thong-ke.xls';document.body.appendChild(a);a.click();a.remove()}
+init();
+</script></body></html>
